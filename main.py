@@ -1,15 +1,17 @@
-from fastapi import FastAPI
-from news.new_list_crawler import initial_news_list_crawl
-
-app = FastAPI()
-
-
-@app.get("/news")
-def get_today_news():
-    return initial_news_list_crawl()
+from extract_data.extract_papers import PaperExtractor
+from extract_data.paper_model import PaperModel
+import json
+from core.config import configer
 
 
 if __name__ == '__main__':
-    import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    with open('papers.json', encoding='utf-8') as file:
+        paper_dict_list = json.loads(file.read())
+        paper_model_list = [PaperModel(**paper_dict) for paper_dict in paper_dict_list]
+        PaperExtractor.extract_paper_with_list(paper_model_list)
+
+        print(configer.config)
+
+
+
 
